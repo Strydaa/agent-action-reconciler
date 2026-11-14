@@ -1,8 +1,9 @@
 {
   "name": "agent-action-reconciler",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Reconciles agent side effects whose outcome is unknown: claim first, execute, verify, never blindly retry.",
   "license": "MIT",
+  "keywords": ["ai-agents", "idempotency", "side-effects", "reconciliation", "exactly-once", "sqlite"],
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -15,7 +16,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build && npm test"
   },
   "dependencies": {
     "better-sqlite3": "^13.2.0"
