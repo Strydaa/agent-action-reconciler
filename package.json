@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "description": "Reconciles agent side effects whose outcome is unknown: claim first, execute, verify, never blindly retry.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Strydaa/agent-action-reconciler.git"
+  },
   "keywords": ["ai-agents", "idempotency", "side-effects", "reconciliation", "exactly-once", "sqlite"],
   "type": "module",
   "main": "dist/index.js",
