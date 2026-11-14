@@ -9,5 +9,5 @@
     "esModuleInterop": true,
     "skipLibCheck": true
   },
-  "include": ["src", "adapters", "test"]
+  "include": ["src", "adapters", "bench", "test"]
 }

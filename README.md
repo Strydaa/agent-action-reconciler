@@ -30,7 +30,29 @@ console.log(r.status); // 'verified' | 'accepted' | 'unknown' | 'failed'
 
 ## Benchmark: simulation, not demand evidence
 
-Any benchmark of this approach runs against a fake provider in a simulation. It shows that the mechanism behaves as designed. It does not show real-world duplicate rates, and it is not evidence that anyone needs this library. No benchmark ships in this version.
+The benchmarks run against a fake provider in a simulation. They show that the mechanism behaves as designed. They do not show real-world duplicate rates, and they are not evidence that anyone needs this library.
+
+```bash
+npx tsx bench/bench.ts        # response lost after the effect was applied
+npx tsx bench/bench-late.ts   # effect lands after the caller already timed out
+```
+
+2,000 seeded episodes per row, three attempts each. Duplicate effect rate:
+
+| Scenario | Provider key | Blind retry | Provider key retry | `act()` with `verify` |
+| --- | --- | --- | --- | --- |
+| Response lost, 30% | no | 30.1% | n/a | 0.0% |
+| Response lost, 30% | yes | 30.4% | 0.0% | 0.0% |
+| Effect lands late, 30%, retry at once | no | 30.1% | n/a | 30.1% |
+| Effect lands late, 30%, wait out the lease | no | 30.1% | n/a | 0.0% |
+| Effect lands late, 30%, retry at once | yes | 30.1% | 0.0% | 0.0% |
+
+What this does and does not say:
+
+- Where the provider enforces an idempotency key, the key alone removes duplicates. This library adds nothing there.
+- Without a key, `act()` helps only if `verify` can read the real state. The fake provider's read-back is always instantly consistent; real APIs often are not.
+- The "wait out the lease" row is 0.0% by construction: the simulation lands the pending effect before the next check. It shows the lease matters, not that the lease always works.
+- Retrying at once without a key duplicates exactly as often as blind retry. `leaseMs` exists for this case.
 
 ## Limits
 
