@@ -56,11 +56,13 @@ What this does and does not say:
 
 ## Limits
 
+- **No exactly-once guarantee.** Only a provider-enforced idempotency key can prevent a duplicate, and only within that provider's retention window. Without one, `act()` reduces duplicates and turns uncertainty into an explicit `unknown` status; a duplicate or a missing effect is still possible, for example when a read-back lags, an effect lands late, or the process dies between the call and recording its result.
 - The SQLite store is for a single machine. Several servers sharing one registry would need a different store.
 - You write `verify`. The library cannot know what a provider actually did. Return `'unknown'` whenever a lookup is inconclusive; "not found" is not proof that the effect did not happen.
 - A `not_done` read-back taken while a request is still in flight can be misleading. `leaseMs` reduces this and does not eliminate it.
-- The provider's response is stored as JSON in the database. Do not return personal data from `execute` if you do not want it on disk.
-- The library stores no credentials. Only a hash of `payload` is written to the database.
+- **Do not store sensitive data.** The value your `execute` function returns (`result`) and the text of any error it throws are written to the database as plain, unencrypted text, and the result is handed back on replays. Return only what you need, such as an ID. Never return tokens, secrets or personal data, and do not put them in error messages.
+- Only a SHA-256 hash of `payload` is stored, not the payload itself. The `key` is stored as given, so build it with `keyFrom` from event identifiers rather than from personal data.
+- The library stores no credentials of its own. Treat the database file like any other file that can hold business data, and keep it out of version control.
 
 ## Scope
 
